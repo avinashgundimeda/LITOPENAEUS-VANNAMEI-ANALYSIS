@@ -1,49 +1,45 @@
 import cv2
 import numpy as np
 
-# --- Calibration ---
 PIXELS_PER_MM = 9.44
 MORPH_KERNEL = np.ones((3, 3), np.uint8)
 MIN_CONTOUR_AREA = 25
 
-# --- Length -> Weight regression (g = a * length_mm ** b) ---
 WEIGHT_A = 0.00007079
 WEIGHT_B = 2.92
 
 def estimate_weight_from_length(length_mm):
     return WEIGHT_A * (length_mm ** WEIGHT_B)
 
-# --- Named sets of HSV ranges. Each set is a list of (lower, upper) tuples;
-#     all ranges in a set are OR-combined into one mask before detection. ---
 COLOR_SETS = {
     'green_marks': [
         (np.array([30, 20, 20]), np.array([90, 255, 255])),
     ],
     'dark_black_brown': [
-        (np.array([0, 0, 0]), np.array([180, 255, 30])),      # dark black
-        (np.array([10, 100, 20]), np.array([20, 255, 200])),  # brown
+        (np.array([0, 0, 0]), np.array([180, 255, 30])),
+        (np.array([10, 100, 20]), np.array([20, 255, 200])),        
     ],
     'light_brown': [
         (np.array([10, 50, 50]), np.array([30, 255, 255])),
     ],
     'brown_orange_combo': [
-        (np.array([0, 100, 20]), np.array([20, 255, 100])),   # dark brown
-        (np.array([10, 50, 50]), np.array([30, 255, 255])),   # light brown
-        (np.array([0, 100, 100]), np.array([15, 255, 255])),  # orange
+        (np.array([0, 100, 20]), np.array([20, 255, 100])),   
+        (np.array([10, 50, 50]), np.array([30, 255, 255])),  
+        (np.array([0, 100, 100]), np.array([15, 255, 255])),     
     ],
     'black_orange_combo': [
-        (np.array([0, 0, 0]), np.array([180, 255, 60])),      # light black
-        (np.array([0, 0, 0]), np.array([180, 255, 30])),      # dark black
-        (np.array([0, 50, 150]), np.array([20, 255, 255])),   # light orange
-        (np.array([0, 100, 100]), np.array([15, 255, 255])),  # dark orange
+        (np.array([0, 0, 0]), np.array([180, 255, 60])),    
+        (np.array([0, 0, 0]), np.array([180, 255, 30])),   
+        (np.array([0, 50, 150]), np.array([20, 255, 255])),  
+        (np.array([0, 100, 100]), np.array([15, 255, 255])),  
     ],
     'all_brown_black_orange': [
-        (np.array([10, 50, 50]), np.array([30, 255, 255])),   # light brown
-        (np.array([0, 100, 20]), np.array([20, 255, 100])),   # dark brown
-        (np.array([0, 0, 0]), np.array([180, 255, 60])),      # light black
-        (np.array([0, 0, 0]), np.array([180, 255, 30])),      # dark black
-        (np.array([0, 50, 150]), np.array([20, 255, 255])),   # light orange
-        (np.array([0, 100, 100]), np.array([15, 255, 255])),  # dark orange
+        (np.array([10, 50, 50]), np.array([30, 255, 255])),   
+        (np.array([0, 100, 20]), np.array([20, 255, 100])),  
+        (np.array([0, 0, 0]), np.array([180, 255, 60])),    
+        (np.array([0, 0, 0]), np.array([180, 255, 30])),   
+        (np.array([0, 50, 150]), np.array([20, 255, 255])),  
+        (np.array([0, 100, 100]), np.array([15, 255, 255])),  
     ],
 }
 
@@ -65,7 +61,6 @@ def process_image_bytes(image_bytes, color_ranges=None):
     elif isinstance(color_ranges, str) and color_ranges in COLOR_SETS:
         color_ranges = COLOR_SETS[color_ranges]
 
-    # Decode image
     arr = np.frombuffer(image_bytes, np.uint8)
     image = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if image is None:
@@ -75,11 +70,9 @@ def process_image_bytes(image_bytes, color_ranges=None):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     mask = build_combined_mask(hsv, color_ranges)
 
-    # Morphological cleanup
     processed_mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, MORPH_KERNEL, iterations=2)
     processed_mask = cv2.morphologyEx(processed_mask, cv2.MORPH_CLOSE, MORPH_KERNEL, iterations=2)
 
-    # Watershed to separate touching blobs
     sure_bg = cv2.dilate(processed_mask, MORPH_KERNEL, iterations=3)
     dist_transform = cv2.distanceTransform(processed_mask, cv2.DIST_L2, 5)
     

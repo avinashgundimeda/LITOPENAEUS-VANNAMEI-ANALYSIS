@@ -14,44 +14,33 @@ import cv2
 import numpy as np
 from flask import Flask, request, jsonify, render_template, send_from_directory
 
-# Import watershed logic from detection.py
 from detection import process_image_bytes, COLOR_SETS
-# Configure logging
+
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-# Base directory is the backend/ directory where app.py resides
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Static folders are inside the backend/ folder
 UPLOAD_DIR = os.path.join(BASE_DIR, "static", "uploads")
 ANNOTATED_DIR = os.path.join(BASE_DIR, "static", "uploads", "annotated")
 
-# Configure custom environment variable path for persistent volumes on Render
 VISITORS_FILE = os.environ.get(
     "VISITORS_FILE_PATH",
     os.path.join(os.path.dirname(BASE_DIR), "visitor_data.json")
 )
-
-# Ensure directories exist
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(ANNOTATED_DIR, exist_ok=True)
 
-# Flask defaults to templates/ and static/ in the same directory as app.py, so we explicitly configure it to point to UI/templates
 app = Flask(
     __name__,
     template_folder=os.path.join(os.path.dirname(BASE_DIR), "UI", "templates")
 )
-app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024  # 32MB cap
+app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024 
 
-# ----------------------------------------------------------------
-# Visitor metrics logging helpers
-# ----------------------------------------------------------------
+
 def get_client_ip():
-    # Render routes requests through a load balancer, so check X-Forwarded-For first
     if request.headers.get('X-Forwarded-For'):
         return request.headers.get('X-Forwarded-For').split(',')[0].strip()
     return request.remote_addr
@@ -63,7 +52,6 @@ def track_visit():
     
     data = {"total_visits": 0, "unique_visits": 0, "visitors": []}
     
-    # Read existing visitor logs if file exists
     if os.path.exists(VISITORS_FILE):
         try:
             with open(VISITORS_FILE, "r") as f:
@@ -71,7 +59,6 @@ def track_visit():
         except Exception as exc:
             logger.error(f"Error reading visitor log file: {exc}")
             
-    # Update stats
     data["total_visits"] = data.get("total_visits", 0) + 1
     
     visitors = data.get("visitors", [])
@@ -96,9 +83,7 @@ def track_visit():
     data["visitors"] = visitors
     data["unique_visits"] = len(visitors)
     
-    # Write updated stats back safely
     try:
-        # Ensure target folder exists (crucial for custom Render disk paths)
         os.makedirs(os.path.dirname(os.path.abspath(VISITORS_FILE)), exist_ok=True)
         with open(VISITORS_FILE, "w") as f:
             json.dump(data, f, indent=2)
@@ -107,9 +92,7 @@ def track_visit():
         
     return data
 
-# ----------------------------------------------------------------
-# Web and API Routes
-# ----------------------------------------------------------------
+
 @app.route("/UI/static/<path:filename>")
 def serve_ui_static(filename):
     return send_from_directory(
@@ -123,7 +106,6 @@ def index():
 
 @app.route("/visitors")
 def visitors():
-    # Logs visit count on visit page access
     track_visit()
     return render_template("visitors.html")
 
@@ -157,7 +139,6 @@ def analyze():
             filename = f.filename
             file_bytes = f.read()
 
-            # Save uploaded original copy
             ext = filename.rsplit(".", 1)[1].lower() if "." in filename else "png"
             unique_name = f"{uuid.uuid4().hex}.{ext}"
             original_path = os.path.join(UPLOAD_DIR, unique_name)
@@ -165,18 +146,14 @@ def analyze():
             with open(original_path, "wb") as out_file:
                 out_file.write(file_bytes)
 
-            # Process image bytes using watershed pipeline
             res = process_image_bytes(file_bytes, COLOR_SETS['all_brown_black_orange'])
             shrimp_count = res["shrimp_count"]
             detections = res["detections"]
             annotated_image = res["annotated_image"]
-
-            # Save marked annotated image copy
             annotated_name = f"annotated_{unique_name}"
             annotated_path = os.path.join(ANNOTATED_DIR, annotated_name)
             cv2.imwrite(annotated_path, annotated_image)
 
-            # Record stats
             for det in detections:
                 all_lengths.append(det["length_mm"])
                 all_weights.append(det["weight_g"])

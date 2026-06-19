@@ -11,7 +11,6 @@
 <body data-theme="light">
 <div class="app-shell">
 
-  <!-- ============================== HEADER ============================== -->
   <header class="site-header">
     <div class="header-text">
       <h1>Large Mouth Bass <span class="accent">ANALYSIS</span></h1>
@@ -21,7 +20,6 @@
       </div> -->
     </div>
     
-    <!-- Hidden elements required by app.js to prevent JavaScript runtime errors -->
     <div style="display: none;">
       <button id="themeLight" class="active" title="Light mode">☀</button>
       <button id="themeDark" title="Dark mode">●</button>
@@ -30,7 +28,6 @@
     </div>
   </header>
 
-  <!-- ============================== STAT CARDS ============================== -->
   <section class="stats-grid">
     <div class="stat-card">
       <div class="stat-label">TOTAL DETECTED</div>
@@ -50,7 +47,6 @@
     </div>
   </section>
 
-  <!-- ============================== UPLOAD SECTION ============================== -->
   <section class="upload-section" style="margin-bottom: 40px;">
     <div class="dashboard-card upload-card">
       <div class="card-header">
@@ -60,7 +56,6 @@
       <div class="card-body">
         <div class="dropzone" id="dropzone" style="padding: 60px 20px; border-width: 2px;">
           <div class="upload-icon-box" style="width: 64px; height: 64px; border-radius: 16px; margin-bottom: 20px;">
-            <!-- Outlined upward arrow in square box -->
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="17 8 12 3 7 8"></polyline>
@@ -72,7 +67,6 @@
           <input type="file" id="fileInput" multiple accept="image/png,image/jpeg,image/bmp,image/webp">
         </div>
 
-        <!-- Selected files container / status -->
         <div class="file-status-box" style="padding: 16px 20px;">
           <div class="file-status-header" style="font-size: 14px;">
             <span id="fileCountLabel">No files selected</span>
@@ -83,7 +77,6 @@
           </div>
         </div>
 
-        <!-- Progress wrap -->
         <div class="progress-wrap" id="progressWrap">
           <div class="progress-label" style="font-size: 13px;">
             <span id="progressStage">Ready</span>
@@ -94,12 +87,9 @@
           </div>
         </div>
 
-        <!-- Calibration row (hidden but functional) -->
         <div style="display: none;">
           <input type="number" id="calibrationInput" value="0.25">
         </div>
-
-        <!-- Buttons -->
         <div class="upload-actions" style="margin-top: 10px;">
           <button class="btn-primary" id="analyzeBtn" disabled style="padding: 16px; font-size: 15px;">
             <span class="btn-icon">▷</span> ANALYZE
@@ -112,10 +102,8 @@
     </div>
   </section>
 
-  <!-- ============================== 2-COLUMN ANALYTICS ROW ============================== -->
   <section class="dashboard-row" style="grid-template-columns: 1fr 1fr;">
     
-    <!-- Column 1: Length Distribution Chart -->
     <div class="dashboard-card">
       <div class="card-header">
         <h2>LENGTH DISTRIBUTION</h2>
@@ -129,7 +117,6 @@
       </div>
     </div>
 
-    <!-- Column 2: Weight Distribution Chart -->
     <div class="dashboard-card">
       <div class="card-header">
         <h2>WEIGHT DISTRIBUTION</h2>
@@ -145,7 +132,6 @@
 
   </section>
 
-  <!-- ============================== RESULTS ============================== -->
   <section class="results-section">
     <div class="results-header">
       <h2>DETECTION RESULTS</h2>
@@ -159,7 +145,6 @@
     </div>
   </section>
 
-  <!-- ============================== FOOTER ============================== -->
   <footer class="site-footer">
     <div class="brand">Large Mouth Bass Analysis</div>
     <div class="links">

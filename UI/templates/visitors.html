@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Visitor Analytics - Litopenaeus Vannamei Analysis</title>
+<title>Visitor Analytics - Large Mouth Bass Analysis</title>
 <link rel="stylesheet" href="/UI/static/css/style.css">  
 </head>
 <body data-theme="light">
 <div class="app-shell">
 
-  <!-- ============================== HEADER ============================== -->
   <header class="site-header">
     <div class="header-text">
       <h1>VISITOR <span class="accent">ANALYTICS</span></h1>
@@ -20,7 +19,6 @@
     </div>
   </header>
 
-  <!-- ============================== STAT CARDS ============================== -->
   <section class="stats-grid">
     <div class="stat-card">
       <div class="stat-label">TOTAL PAGE VISITS</div>
@@ -36,7 +34,6 @@
     </div>
   </section>
 
-  <!-- ============================== VISITORS LIST ============================== -->
   <section class="results-section">
     <div class="results-header">
       <h2>RECENT CLIENT VISITS</h2>
@@ -63,7 +60,6 @@
       </table>
     </div>
 
-    <!-- Navigation Back -->
     <div style="margin-top: 28px;">
       <a href="/" class="btn-primary" style="display: inline-flex; align-items: center; justify-content: center; max-width: 240px;">
         <span class="btn-icon">◁</span> BACK TO DASHBOARD
@@ -71,13 +67,10 @@
     </div>
   </section>
 
-  <!-- ============================== FOOTER ============================== -->
   <footer class="site-footer">
-    <div class="brand">Ram Kurapati</div>
+    <div class="brand">Large Mouth Bass Analysis</div>
     <div class="links">
-      <span><a href="/visitors">Visitor Counter</a></span>
-      <span>·</span>
-      <span><a href="">GitHub</a></span>
+      <span><a href="github.com">GitHub</a></span>
       <span id="footerYear"></span>
     </div>
   </footer>
@@ -95,16 +88,13 @@
       document.getElementById("statTotalVisits").textContent = data.total_visits || 0;
       document.getElementById("statUniqueVisits").textContent = data.unique_visits || 0;
 
-      // Find last visit time
       let lastVisit = "—";
       if (data.visitors && data.visitors.length > 0) {
-        // Sort by last visit descending
         const sorted = [...data.visitors].sort((a, b) => new Date(b.last_visit) - new Date(a.last_visit));
         lastVisit = new Date(sorted[0].last_visit).toLocaleString();
       }
       document.getElementById("statLastVisit").textContent = lastVisit;
 
-      // Render table
       const tbody = document.getElementById("visitorsTableBody");
       const label = document.getElementById("visitCountLabel");
       
@@ -123,7 +113,6 @@
 
       label.textContent = `${data.visitors.length} client${data.visitors.length > 1 ? 's' : ''} logged`;
 
-      // Sort visitors list by last_visit descending
       const visitorsSorted = [...data.visitors].sort((a, b) => new Date(b.last_visit) - new Date(a.last_visit));
 
       visitorsSorted.forEach(v => {
@@ -151,8 +140,6 @@
         </tr>`;
     }
   }
-
-  // Load data immediately on page load
   loadVisitorData();
 </script>
 </body>
