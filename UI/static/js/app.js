@@ -207,6 +207,17 @@
     if (!state.selectedFiles.length) return;
 
     analyzeBtn.disabled = true;
+    analyzeBtn.classList.add("is-analyzing");
+    analyzeBtn.innerHTML = `<span class="btn-icon" style="display:inline-block; animation: spin 1s linear infinite;">↻</span> ANALYZING...`;
+    
+    // Add keyframes for spin inline if they don't exist
+    if (!document.getElementById("spin-style")) {
+      const style = document.createElement('style');
+      style.id = "spin-style";
+      style.textContent = `@keyframes spin { 100% { transform: rotate(360deg); } }`;
+      document.head.appendChild(style);
+    }
+
     progressWrap.classList.add("active");
     setProgress(15, "Uploading & analyzing images…");
 
@@ -242,6 +253,8 @@
       progressWrap.classList.remove("active");
     } finally {
       analyzeBtn.disabled = false;
+      analyzeBtn.classList.remove("is-analyzing");
+      analyzeBtn.innerHTML = `<span class="btn-icon">▷</span> ANALYZE`;
     }
   }
 

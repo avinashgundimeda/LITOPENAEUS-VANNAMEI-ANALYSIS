@@ -15,7 +15,7 @@ import numpy as np
 from flask import Flask, request, jsonify, render_template, send_from_directory
 
 # Import watershed logic from detection.py
-from backend.detection import process_image_bytes, COLOR_SETS
+from detection import process_image_bytes, COLOR_SETS
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
